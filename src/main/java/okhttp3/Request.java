@@ -179,8 +179,7 @@ public final class Request {
     }
 
     /**
-     * Sets the header named {@code name} to {@code value}. If this request already has any headers
-     * with that name, they are all replaced.
+     * 为header的value设置name,如果同名将会被覆盖
      */
     public Builder header(String name, String value) {
       headers.set(name, value);
@@ -199,22 +198,21 @@ public final class Request {
       return this;
     }
 
-    /** Removes all headers named {@code name} on this builder. */
+    /** 移除所有名为name的header */
     public Builder removeHeader(String name) {
       headers.removeAll(name);
       return this;
     }
 
-    /** Removes all headers on this builder and adds {@code headers}. */
+    /** 移除所有header */
     public Builder headers(Headers headers) {
       this.headers = headers.newBuilder();
       return this;
     }
 
     /**
-     * Sets this request's {@code Cache-Control} header, replacing any cache control headers already
-     * present. If {@code cacheControl} doesn't define any directives, this clears this request's
-     * cache-control headers.
+     * 设置缓存控制头 {@code Cache-Control}, 并替换已存的缓存控制头
+     * 如果缓存控制头没有定义任何指令,则会清除此请求的缓存控制头
      */
     public Builder cacheControl(CacheControl cacheControl) {
       String value = cacheControl.toString();
