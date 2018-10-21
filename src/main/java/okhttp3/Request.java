@@ -25,17 +25,19 @@ import okhttp3.internal.Util;
 import okhttp3.internal.http.HttpMethod;
 
 /**
- * An HTTP request. Instances of this class are immutable if their {@link #body} is null or itself
- * immutable.
+ * 一个HTTP请求的抽象.
+ * 这个类的实例是不可变的如果{@link #body}为null或者自身为不可变
  */
 public final class Request {
   final HttpUrl url;
+  // post get
   final String method;
   final Headers headers;
+  // 封装Request参数 可能为null
   final @Nullable RequestBody body;
   final Map<Class<?>, Object> tags;
 
-  private volatile @Nullable CacheControl cacheControl; // Lazily initialized.
+  private volatile @Nullable CacheControl cacheControl; // 懒加载
 
   Request(Builder builder) {
     this.url = builder.url;
@@ -70,10 +72,9 @@ public final class Request {
   }
 
   /**
-   * Returns the tag attached with {@code Object.class} as a key, or null if no tag is attached with
-   * that key.
+   * 返回一个关联{@code Object.class}作为key的tag,如果没有tag作为key则返回null.
    *
-   * <p>Prior to OkHttp 3.11, this method never returned null if no tag was attached. Instead it
+   * this method never returned null if no tag was attached. Instead it
    * returned either this request, or the request upon which this request was derived with {@link
    * #newBuilder()}.
    */
@@ -82,8 +83,7 @@ public final class Request {
   }
 
   /**
-   * Returns the tag attached with {@code type} as a key, or null if no tag is attached with that
-   * key.
+   * 返回一个tag作为{@code type}的key,如果没有tag则返回null
    */
   public @Nullable <T> T tag(Class<? extends T> type) {
     return type.cast(tags.get(type));
@@ -94,14 +94,16 @@ public final class Request {
   }
 
   /**
-   * Returns the cache control directives for this response. This is never null, even if this
-   * response contains no {@code Cache-Control} header.
+   * 返回这个的response的cache control,即便没有cache control也不会返回null
    */
   public CacheControl cacheControl() {
     CacheControl result = cacheControl;
     return result != null ? result : (cacheControl = CacheControl.parse(headers));
   }
 
+    /**
+     * 通过scheme判断http与https
+     */
   public boolean isHttps() {
     return url.isHttps();
   }
@@ -122,9 +124,10 @@ public final class Request {
     Headers.Builder headers;
     @Nullable RequestBody body;
 
-    /** A mutable map of tags, or an immutable empty map if we don't have any. */
+    /** 一个tag的可变map, 如果没有tag则是一个不可变空map*/
     Map<Class<?>, Object> tags = Collections.emptyMap();
 
+    /** 默认Method是GET */
     public Builder() {
       this.method = "GET";
       this.headers = new Headers.Builder();
@@ -147,10 +150,10 @@ public final class Request {
     }
 
     /**
-     * Sets the URL target of this request.
+     * 设置请求的目标url
      *
-     * @throws IllegalArgumentException if {@code url} is not a valid HTTP or HTTPS URL. Avoid this
-     * exception by calling {@link HttpUrl#parse}; it returns null for invalid URLs.
+     * @throws IllegalArgumentException 如果 {@code url}不是一个有效的http、https url.
+     * 避免调用{@link HttpUrl#parse}抛出异常;如果传入一个无效的资源定位符会返回null.
      */
     public Builder url(String url) {
       if (url == null) throw new NullPointerException("url == null");
@@ -166,10 +169,9 @@ public final class Request {
     }
 
     /**
-     * Sets the URL target of this request.
+     * 设置请求的目标url
      *
-     * @throws IllegalArgumentException if the scheme of {@code url} is not {@code http} or {@code
-     * https}.
+     * @throws IllegalArgumentException 当url不是http或者https时抛出异常
      */
     public Builder url(URL url) {
       if (url == null) throw new NullPointerException("url == null");
